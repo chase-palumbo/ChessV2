@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChessCopy</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer type="module" src="script.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="main">
+      <h2>Chase's</h1>
+      <h1>CHESS</h1>
+      <button class="vs-AI btn">VS. A.I.</button>
+      <button class="two-player btn">2 Player</button>
+      
+    </div>
+    
+    <div class="taken-pieces">
+      <p class="taken-pieces--title">White's Pieces</p>
+      <div class="taken-pieces--box"></div>
+    </div>
+
+    <div class="board-container">
+      <div class="board">
+
+        <!--8th row-->
+        <div id="a8" class="white-square square">
+          <div class="number-label--red"><strong>8</strong></div>
+        </div>
+        <div id="b8" class="red-square square"></div>
+        <div id="c8" class="white-square square"></div>
+        <div id="d8" class="red-square square"></div>
+        <div id="e8" class="white-square square"></div>
+        <div id="f8" class="red-square square"></div>
+        <div id="g8" class="white-square square"></div>
+        <div id="h8" class="red-square square"></div>
+
+        <!--7th row-->
+        <div id="a7" class="red-square square">
+          <div class="number-label--white"><strong>7</strong></div>
+        </div>
+        <div id="b7" class="white-square square"></div>
+        <div id="c7" class="red-square square"></div>
+        <div id="d7" class="white-square square"></div>
+        <div id="e7" class="red-square square"></div>
+        <div id="f7" class="white-square square"></div>
+        <div id="g7" class="red-square square"></div>
+        <div id="h7" class="white-square square"></div>
+
+        <!--6th row-->
+        <div id="a6" class="white-square square">
+          <div class="number-label--red"><strong>6</strong></div>
+        </div>
+        <div id="b6" class="red-square square square"></div>
+        <div id="c6" class="white-square square"></div>
+        <div id="d6" class="red-square square"></div>
+        <div id="e6" class="white-square square"></div>
+        <div id="f6" class="red-square square"></div>
+        <div id="g6" class="white-square square"></div>
+        <div id="h6" class="red-square square"></div>
+
+        <!--5th row-->
+        <div id="a5" class="red-square square">
+          <div class="number-label--white"><strong>5</strong></div>
+        </div>
+        <div id="b5" class="white-square square"></div>
+        <div id="c5" class="red-square square"></div>
+        <div id="d5" class="white-square square"></div>
+        <div id="e5" class="red-square square"></div>
+        <div id="f5" class="white-square square"></div>
+        <div id="g5" class="red-square square"></div>
+        <div id="h5" class="white-square square"></div>
+
+        <!--4th row-->
+        <div id="a4" class="white-square square">
+          <div class="number-label--red"><strong>4</strong></div>
+        </div>
+        <div id="b4" class="red-square square"></div>
+        <div id="c4" class="white-square square"></div>
+        <div id="d4" class="red-square square"></div>
+        <div id="e4" class="white-square square"></div>
+        <div id="f4" class="red-square square"></div>
+        <div id="g4" class="white-square square"></div>
+        <div id="h4" class="red-square square"></div>
+
+        <!--3rd row-->
+        <div id="a3" class="red-square square">
+          <div class="number-label--white"><strong>3</strong></div>
+        </div>
+        <div id="b3" class="white-square square"></div>
+        <div id="c3" class="red-square square"></div>
+        <div id="d3" class="white-square square"></div>
+        <div id="e3" class="red-square square"></div>
+        <div id="f3" class="white-square square"></div>
+        <div id="g3" class="red-square square"></div>
+        <div id="h3" class="white-square square"></div>
+
+        <!--2nd row-->
+        
+        <div id="a2" class="white-square square">
+          <div class="number-label--red"><strong>2</strong></div>
+        </div>
+        <div id="b2" class="red-square square"></div>
+        <div id="c2" class="white-square square"></div>
+        <div id="d2" class="red-square square"></div>
+        <div id="e2" class="white-square square"></div>
+        <div id="f2" class="red-square square"></div>
+        <div id="g2" class="white-square square"></div>
+        <div id="h2" class="red-square square"></div>
+
+        <!--1st row-->
+        <div id="a1" class="red-square square">
+          <div class="number-label--white"><strong>1</strong></div>
+          <div class="letter-label--white"><strong>a</strong></div>
+        </div>
+        <div id="b1" class="white-square square">
+          <div class="letter-label--red"><strong>b</strong></div>
+        </div>
+        <div id="c1" class="red-square square">
+          <div class="letter-label--white"><strong>c</strong></div>
+        </div>
+        <div id="d1" class="white-square square">
+          <div class="letter-label--red"><strong>d</strong></div>
+        </div>
+        <div id="e1" class="red-square square">
+          <div class="letter-label--white"><strong>e</strong></div>
+        </div>
+        <div id="f1" class="white-square square">
+          <div class="letter-label--red"><strong>f</strong></div>
+        </div>
+        <div id="g1" class="red-square square">
+          <div class="letter-label--white"><strong>g</strong></div>
+        </div>
+        <div id="h1" class="white-square square">
+          <div class="letter-label--red"><strong>h</strong></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="action-log"></div>
+
+    <div class="lost-pieces">
+      <p class="lost-pieces--title">Black's Pieces</p>
+      <div class="lost-pieces--box"></div>
+    </div>
+    
+  </div>
+</body>
+</html>

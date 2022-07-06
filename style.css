@@ -1,0 +1,305 @@
+
+body {
+  background-color: rgb(47, 46, 56);
+  font-size: 16px;
+}
+
+/* Chess Piece Imgs */
+img {
+  height: 80px;
+  width: 80px;
+}
+
+/* Grid Container */
+.container {
+  height: 99%;
+  width: 99%;
+  position: absolute;
+  display: grid;
+  grid-template-areas: 
+  "main board action-log"
+  "taken-pieces board lost-pieces";
+  grid-template-columns: 1.3fr 2fr 1.3fr;
+  grid-template-rows: 1.5fr 1fr;
+  gap: 1em;
+}
+/* End Grid Area */
+
+
+/* Main Area */
+.main {
+  margin: 20px 20px;
+  grid-area: main;
+  border: 2px solid black;
+  border-radius: 15%;
+  text-align: center;
+}
+
+h1 { 
+  position: relative;
+  font-size: 6.5em;
+  text-align: center;
+  text-decoration: underline;
+  color:rgb(164, 58, 58);
+  bottom: 50px;
+}
+
+h2 {
+  position: relative;
+  font-size: 2.5em;
+  text-align: center;
+  top: 30px;
+  color: blanchedalmond
+}
+
+.vs-AI,
+.two-player { 
+  position: relative;
+  cursor: pointer;
+  font-size: 2em;
+  color: rgb(245, 236, 213);
+  width: 90%;
+  border-radius: 5px;
+  background-color: rgb(69, 69, 228);
+  bottom: 60px;
+  padding: 5px;
+  margin-bottom: 20px;
+}
+
+.quit-game {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.7em;
+  background-color: lightcoral;
+  color: darkslategray;
+  width: 45%;
+  border-radius: 5px;
+  padding: 5px;
+  bottom: 40px;
+}
+/* End Main Area */
+
+
+/* Taken Pieces Area */
+.taken-pieces {
+  margin: 20px 20px;
+  grid-area: taken-pieces;
+  font-size: 60px;
+}
+
+.taken-pieces--title{
+  text-align: center;
+  color: white;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.taken-pieces--box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-left: 20px;
+}
+/* End Taken Pices Area */
+
+
+/* Board Area */
+.board-container {
+  margin: 20px;
+  grid-area: board;
+}
+
+.board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: pink;
+  width: 800px;
+  height: 800px;
+  border: 2px solid black;
+  box-shadow: 0px 0px 0px 10px rosybrown;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.white-square {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: whitesmoke;
+}
+
+.red-square {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(164, 58, 58);
+}  
+
+.number-label--red {
+  position: absolute;
+  top: 3px;
+  left: 7px;
+  font-size: 22px;
+  color: rgb(164, 58, 58);
+}
+
+.number-label--white {
+  position: absolute;
+  top: 0px;
+  left: 5px;
+  font-size: 22px;
+  color: whitesmoke;
+}
+
+.letter-label--red {
+  position: absolute;
+  bottom: 3px;
+  left: 7px;
+  font-size: 22px;
+  color: rgb(164, 58, 58);
+}
+
+.letter-label--white {
+  position: absolute;
+  bottom: 3px;
+  left: 7px;
+  font-size: 22px;
+  color: whitesmoke;
+}
+
+.white-promotion{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 15px;
+  z-index: 1;
+  margin: auto;
+  height: 100px;
+  width: 380px;
+  background-color: whitesmoke;
+}
+
+.black-promotion{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 15px;
+  z-index: 1;
+  margin: auto;
+  margin-top: 20px;
+  height: 100px;
+  width: 380px;
+  background-color: whitesmoke;
+}
+
+.promote-piece:hover {
+  transform: scale(1.2);
+  /* border: 2px solid green */
+  box-shadow: 0px 0px 0px 4px green inset;
+  border-radius: 15px;
+
+}
+/* End Board Area */
+
+
+/* Action Log Area */
+.action-log {
+  margin: 20px 20px;
+  grid-area: action-log;
+  border: 2px solid black;
+  overflow: scroll;
+  scroll-behavior: smooth;
+}
+
+.action-text {
+  font-size: 25px;
+  color: rgb(204, 188, 148);
+  padding-left: 20px;
+}
+
+.action-text--White {
+  font-weight: bold;
+  color: whitesmoke;
+}
+
+.action-text--Black {
+  font-weight: bold;
+  color: black;
+}
+
+.action-check--White {
+  font-weight: bold;
+  font-size: 30px;
+  color: white;
+}
+
+.action-mate--White {
+  font-weight: bold;
+  font-size: 40px;
+  color: white;
+}
+
+.action-check--Black {
+  font-weight: bold;
+  font-size: 30px;
+  color: black;
+}
+
+.action-mate--Black {
+  font-weight: bold;
+  font-size: 40px;
+  color: black;
+}
+
+.action-stalemate {
+  font-size: 40px;
+  color: rgb(204, 188, 148);
+}
+/* End Action Log Area */
+
+
+/* Lost Pieces Area */
+.lost-pieces {
+  margin: 20px 20px;
+  grid-area: lost-pieces;
+  font-size: 60px;
+}
+
+.lost-pieces--title{
+  text-align: center;
+  color: black;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.lost-pieces--box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-left: 20px;
+}
+/* End Lost Pieces Area */
+
+
+.clicked-square {
+  box-shadow: 0px 0px 0px 5px green inset;
+}
+
+.drop-square {
+  box-shadow: 0px 0px 0px 5px blue inset;
+}
+
+.hidden {
+  opacity: 0;
+}
