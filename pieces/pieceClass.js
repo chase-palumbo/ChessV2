@@ -211,10 +211,10 @@ export default class Piece {
 
       if (nextSquare === this.square.id) {
         if (this.inCheck) {
-        // REMOVES ANY KING MOVES IN THE THREAT PATH 
-        const otherSideSquare = `${String.fromCharCode(threatLet += threatDirection[0])}${threatNum += threatDirection[1]}`;
-        if (this.moves.includes(otherSideSquare)) 
-          this.moves = this.moves.filter(move => move !== otherSideSquare);
+          // REMOVES ANY KING MOVES IN THE THREAT PATH 
+          const otherSideSquare = `${String.fromCharCode(threatLet += threatDirection[0])}${threatNum += threatDirection[1]}`;
+          if (this.moves.includes(otherSideSquare)) 
+            this.moves = this.moves.filter(move => move !== otherSideSquare);
         }
         break;
       }

@@ -16,6 +16,7 @@ import { BlackKing } from "./pieces/blackKing.js";
 
 const state = {
   turnNum: 0,
+  activePlayer: '',
   allOccupiedSquares: [],
   totalPieces: [],
   white: {
@@ -143,31 +144,33 @@ const dropPiece = function(e) {
 
   const player = curPiece.player;
   const playerOccupied = player === 'White' ? state.white.occupiedSquares : state.black.occupiedSquares;
-  const playerPieces = player === 'White' ? state.white.allPieces : state.black.allPieces;
   const villianOccupied = player === 'White' ? state.black.occupiedSquares : state.white.occupiedSquares;
-  const villianPieces = player === 'White' ? state.black.allPieces : state.white.allPieces;
+  
 
   // Check if square is valid move
   if (!dropSquare || !curPiece.moves.includes(dropSquare.id)) {
     View.unclickPiece(curPiece, dropPiece, clickPiece);
     return;
+  }
 
   // Check if square is occupied by a villian piece
-  } else if (villianOccupied.includes(dropSquare.id)) {
+  else if (villianOccupied.includes(dropSquare.id)) {
+    const villianPieces = player === 'White' ? state.black.allPieces : state.white.allPieces;
     const capturedPiece = getCapturedPiece(dropSquare, villianPieces);
     curPiece.capture(dropSquare, capturedPiece);
-
     removePiece(villianPieces, capturedPiece);
+  }
     
   // Only for castling
-  } else if (playerOccupied.includes(dropSquare.id)) {
+  else if (playerOccupied.includes(dropSquare.id)) {
+    const playerPieces = player === 'White' ? state.white.allPieces : state.black.allPieces;
     const rookPiece = playerPieces.find(piece => piece.square.id === dropSquare.id);
     castle(curPiece, rookPiece);
-    
     return;
+  }
 
   // Move to empty square
-  } else curPiece.move(dropSquare);
+  else curPiece.move(dropSquare);
   
   actionLogData.dropSquare = dropSquare.id;
   View.unclickPiece(curPiece, dropPiece, clickPiece);
@@ -176,7 +179,6 @@ const dropPiece = function(e) {
   // Check for pawn promotion
   if (curPiece.type === 'Pawn' && pawnPromotionCheck(curPiece))
     return;
-    
   updateState(state.white.allPieces, state.black.allPieces);
 };
 
@@ -261,7 +263,6 @@ const getPromotedPiece = function(e) {
   View.unclickPromote(getPromotedPiece, clickPiece, player);  
 
   promotePiece(state.clicked, state.clicked.square, state.promotePiece, playerPieces);
-
   updateState(state.white.allPieces, state.black.allPieces);
 };
 
