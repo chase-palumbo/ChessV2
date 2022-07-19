@@ -2,13 +2,14 @@ import Piece from "./pieceClass.js";
 
 export class WhiteKnight extends Piece {
   type = 'Knight';
+  rank = 2;
   player = 'White';
   img = './pieceImgs/White_Knight.svg.png';
 
   constructor(squareID, pieceID) {
     super();
     this.square = document.getElementById(squareID);
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -16,12 +17,10 @@ export class WhiteKnight extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
   }
 
-  calcMoves(state) {
+  calcControl(state) {
     const [curLet, curNum] = this.square.id.split('');
-    const whiteOccupied = state.white.occupiedSquares;
     const possibleMoves = [];
 
     const curLetCopy = curLet.charCodeAt(0);
@@ -39,9 +38,13 @@ export class WhiteKnight extends Piece {
     possibleMoves.push(upPos1, upPos2, rightPos1, rightPos2, downPos1, downPos2, leftPos1, leftPos2);
 
     const controlSquares = this.validSquareCheck(possibleMoves);
+    return controlSquares
+  }
 
-    this.control = controlSquares;
-    this.moves = controlSquares.filter(sq => !whiteOccupied.includes(sq));
+  calcMoves(state) {
+    const whiteOccupied = state.white.occupiedSquares;
+    const moves = this.control.filter(sq => !whiteOccupied.includes(sq));
+    return moves;
   }
   
 };

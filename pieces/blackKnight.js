@@ -2,13 +2,14 @@ import Piece from "./pieceClass.js";
 
 export class BlackKnight extends Piece {
   type = 'Knight';
+  rank = 2;
   player = 'Black';
   img = './pieceImgs/Black_Knight.svg.png';
 
   constructor(squareID, pieceID) {
     super();
     this.square = document.getElementById(squareID);
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -16,12 +17,10 @@ export class BlackKnight extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
   }
 
-  calcMoves(state) {
+  calcControl(state) {
     const [curLet, curNum] = this.square.id.split('');
-    const blackOccupied = state.black.occupiedSquares;
     const possibleMoves = [];
 
     const curLetCopy = curLet.charCodeAt(0);
@@ -40,8 +39,13 @@ export class BlackKnight extends Piece {
     
     const controlSquares = this.validSquareCheck(possibleMoves);
     
-    this.control = controlSquares;
-    this.moves = controlSquares.filter(sq => !blackOccupied.includes(sq));
+    return controlSquares;
+  }
+
+  calcMoves(state) {
+    const blackOccupied = state.black.occupiedSquares;
+    const moves = this.control.filter(sq => !blackOccupied.includes(sq));
+    return moves;
   }
   
 };

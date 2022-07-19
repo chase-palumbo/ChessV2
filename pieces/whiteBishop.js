@@ -2,13 +2,14 @@ import Piece from "./pieceClass.js";
 
 export class WhiteBishop extends Piece {
   type = 'Bishop';
+  rank = 3;
   player = 'White';
   img = './pieceImgs/White_Bishop.svg.png';
 
   constructor(squareID, pieceID) {
     super();
     this.square = document.getElementById(squareID);
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -16,11 +17,9 @@ export class WhiteBishop extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
   }
 
-  calcMoves(state) {
-    const whiteOccupied = state.white.occupiedSquares;
+  calcControl(state) {
     const blackKing = state.black.king;
     const controlSquares = [];
     this.threatening = false;
@@ -36,9 +35,14 @@ export class WhiteBishop extends Piece {
 
     const upLeftDiag = [-1, 1];
     this.calcDirection(state.allOccupiedSquares, upLeftDiag, controlSquares, blackKing);
-    
-    this.control = controlSquares;
-    this.moves = controlSquares.filter(sq => !whiteOccupied.includes(sq));
+
+    return controlSquares;
+  }
+
+  calcMoves(state) {
+    const whiteOccupied = state.white.occupiedSquares;
+    const moves = this.control.filter(sq => !whiteOccupied.includes(sq));
+    return moves;
   }
 
 };

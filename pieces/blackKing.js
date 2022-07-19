@@ -2,6 +2,7 @@ import Piece from "./pieceClass.js";
 
 export class BlackKing extends Piece {
   type = 'King';
+  rank = 6;
   player = 'Black';
   img = './pieceImgs/Black_King.svg.png';
 
@@ -9,7 +10,7 @@ export class BlackKing extends Piece {
     super();
     this.square = document.getElementById(squareID);
     this.inCheck = false;
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -17,11 +18,10 @@ export class BlackKing extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
   }
 
   // this.piece, this.player
-  calcMoves(state) {
+  calcControl(state) {
     const [curLet, curNum] = this.square.id.split('');
     const possibleMoves = [];
 
@@ -40,13 +40,12 @@ export class BlackKing extends Piece {
     possibleMoves.push(up, upLeft, upRight, right, left, down, downLeft, downRight);
     
     const controlSquares = this.validSquareCheck(possibleMoves);
-    
-    this.control = controlSquares;
+    return controlSquares;
   }
 
-  preventSelfCheck(whiteControl, blackOccupied) {
+  calcMoves(whiteControl, blackOccupied) {
     const noCheckMoves = this.control.filter(sq => !whiteControl.includes(sq) && !blackOccupied.includes(sq));
-    this.moves = noCheckMoves;
+    return noCheckMoves;
   }
 
   castleOption(state) {
@@ -99,8 +98,8 @@ export class BlackKing extends Piece {
       });
 
       console.log(`White CHECK!`);
-      this.inCheck = true;
-    } else this.inCheck = false;
+      return true;
+    } else return false;
   }
   
 };

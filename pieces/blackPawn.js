@@ -2,13 +2,14 @@ import Piece from "./pieceClass.js";
 
 export class BlackPawn extends Piece {
   type = 'Pawn';
+  rank = 1;
   player = 'Black';
   img = './pieceImgs/Black_Pawn.svg.png';
 
   constructor(squareID, pieceID) {
     super();
     this.square = document.getElementById(squareID);
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -16,7 +17,21 @@ export class BlackPawn extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
+  }
+
+  calcControl(state) {
+    const [curLet, curNum] = this.square.id.split('');
+    const controlSquares = [];
+
+    const curLetCopy = curLet.charCodeAt(0);
+    const curNumCopy = +curNum;
+    
+    const downLeft = `${String.fromCharCode(curLetCopy - 1)}${curNumCopy - 1}`;
+    const downRight = `${String.fromCharCode(curLetCopy + 1)}${curNumCopy - 1}`;
+    controlSquares.push(downLeft, downRight);
+
+    const control = this.validSquareCheck(controlSquares);
+    return control;
   }
 
   calcMoves(state) {
@@ -24,7 +39,6 @@ export class BlackPawn extends Piece {
     const allOccupied = state.allOccupiedSquares;
     const whiteOccupied = state.white.occupiedSquares;
     const validMoves = [];
-    const controlSquares = [];
 
     const curLetCopy = curLet.charCodeAt(0);
     const curNumCopy = +curNum;
@@ -38,20 +52,13 @@ export class BlackPawn extends Piece {
       !allOccupied.includes(down2)
     ) validMoves.push(down, down2);
     else if (!allOccupied.includes(down)) validMoves.push(down);
-    
-    const downLeft = `${String.fromCharCode(curLetCopy - 1)}${curNumCopy - 1}`;
-    const downRight = `${String.fromCharCode(curLetCopy + 1)}${curNumCopy - 1}`;
-    controlSquares.push(downLeft, downRight);
 
-    if (whiteOccupied.includes(downLeft)) validMoves.push(downLeft);
-    if (whiteOccupied.includes(downRight)) validMoves.push(downRight);
+    this.control.forEach(move => {
+      if (whiteOccupied.includes(move)) validMoves.push(move);
+    });
 
-    this.control = this.validSquareCheck(controlSquares);
-    this.moves = this.validSquareCheck(validMoves); 
-  }
-
-  promote() {
-
+    const moves = this.validSquareCheck(validMoves);
+    return moves;
   }
 
 };

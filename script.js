@@ -1,4 +1,5 @@
 import View from "./view.js";
+import { VillianAI } from "./villianAI.js";
 
 import { WhitePawn } from "./pieces/whitePawn.js";
 import { WhiteKnight } from "./pieces/whiteKnight.js";
@@ -15,6 +16,7 @@ import { BlackKing } from "./pieces/blackKing.js";
 
 
 const state = {
+  gameType: '',
   turnNum: 0,
   activePlayer: '',
   allOccupiedSquares: [],
@@ -31,7 +33,8 @@ const state = {
     controlSquares: [],
     king: {}
   },
-  clicked: {}
+  clicked: {},
+  AI: {}
 };
 
 let actionLogData = {
@@ -49,12 +52,7 @@ let actionLogData = {
 const arrayRemove = (arr, value) => arr.filter(el => el !== value);
 
 
-
-
-
-// Menu event handler.  Initializes a two player game, adds pieces to the 
-// board.
-const initGame = function() {
+const init = function() {
   const whitePawn1 = new WhitePawn('a2', 'white-pawn-1');
   const whitePawn2 = new WhitePawn('b2', 'white-pawn-2');
   const whitePawn3 = new WhitePawn('c2', 'white-pawn-3');
@@ -81,8 +79,7 @@ const initGame = function() {
   const blackPawn6 = new BlackPawn('f7', 'black-pawn-6');
   const blackPawn7 = new BlackPawn('g7', 'black-pawn-7');
   const blackPawn8 = new BlackPawn('h7', 'black-pawn-8');
-  const blackKing = new BlackKing('e8', 'black-king');
-
+  
   const blackRook1 = new BlackRook('a8', 'black-rook-1');
   const blackRook2 = new BlackRook('h8', 'black-rook-2');
   const blackKnight1 = new BlackKnight('b8', 'black-knight-1');
@@ -90,13 +87,15 @@ const initGame = function() {
   const blackBishop1 = new BlackBishop('c8', 'black-bishop-1');
   const blackBishop2 = new BlackBishop('f8', 'black-bishop-2');
   const blackQueen = new BlackQueen('d8', 'black-queen');
+  const blackKing = new BlackKing('e8', 'black-king');
 
   state.white.allPieces.push(whitePawn1, whitePawn2, whitePawn3, whitePawn4, whitePawn5, whitePawn6, whitePawn7, whitePawn8, whiteKnight1, whiteKnight2, whiteBishop1, whiteBishop2, whiteRook1, whiteRook2, whiteQueen, whiteKing);
-
 
   state.black.allPieces.push(blackPawn1, blackPawn2, blackPawn3, blackPawn4, blackPawn5, blackPawn6, blackPawn7, blackPawn8, blackKnight1, blackKnight2, blackBishop1, blackBishop2, blackRook1, blackRook2, blackQueen, blackKing);
 
   state.totalPieces.push(...state.white.allPieces, ...state.black.allPieces);
+  state.totalPieces.forEach(piece => piece.createPiece(piece.id));
+
   state.white.king = whiteKing;
   state.black.king = blackKing;
 
@@ -104,18 +103,46 @@ const initGame = function() {
   updateState(state.white.allPieces, state.black.allPieces);
 };
 
+
+// Menu event.  Initializes a two player game, and adds pieces to
+// the  board.
+const init2Player = function() {
+  init();
+  state.gameType = '2-PLAYER';
+  state.AI = false;
+};
+
+
+// Menu event.  Initializes a vs-AI game, and adds pieces to the
+// board.
+const initVsAI = function() {
+  init();
+  // initTESTING();
+  state.gameType = 'VS-AI';
+  const villianAI = new VillianAI();
+  state.AI = villianAI;
+};
+
 /////////////////////////////////////////////////////////////
 // FOR TESTING ONLY
-const initTwoPlayerTESTING = function() {
-
-  const whiteQueen = new WhiteQueen('d1', 'white-queen');
+const initTESTING = function() {
+  const whitePawn1 = new WhitePawn('c6', 'white-pawn-1');
+  const whiteKnight1 = new WhiteKnight('c1', 'white-knight-1');
+  const whiteBishop1 = new WhiteBishop('e2', 'white-bishop-1');
+  const whiteQueen = new WhiteQueen('b3', 'white-queen');
   const whiteKing = new WhiteKing('e1', 'white-king');
-
+  
+  const blackPawn1 = new BlackPawn('a2', 'black-pawn-1');
   const blackKing = new BlackKing('e8', 'black-king');
 
-  state.white.allPieces.push(whiteQueen, whiteKing);
-  state.black.allPieces.push(blackKing);
+  state.white.allPieces.push(whitePawn1, whiteKnight1, whiteBishop1, whiteQueen, whiteKing);
+  state.black.allPieces.push(blackPawn1, blackKing);
+
   state.totalPieces.push(...state.white.allPieces, ...state.black.allPieces);
+  state.totalPieces.forEach(piece => piece.createPiece(piece.id));
+
+  state.white.king = whiteKing;
+  state.black.king = blackKing;
 
   actionLogData.gameStart = true;
   updateState(state.white.allPieces, state.black.allPieces);
@@ -146,7 +173,6 @@ const dropPiece = function(e) {
   const playerOccupied = player === 'White' ? state.white.occupiedSquares : state.black.occupiedSquares;
   const villianOccupied = player === 'White' ? state.black.occupiedSquares : state.white.occupiedSquares;
   
-
   // Check if square is valid move
   if (!dropSquare || !curPiece.moves.includes(dropSquare.id)) {
     View.unclickPiece(curPiece, dropPiece, clickPiece);
@@ -160,7 +186,7 @@ const dropPiece = function(e) {
     curPiece.capture(dropSquare, capturedPiece);
     removePiece(villianPieces, capturedPiece);
   }
-    
+
   // Only for castling
   else if (playerOccupied.includes(dropSquare.id)) {
     const playerPieces = player === 'White' ? state.white.allPieces : state.black.allPieces;
@@ -174,8 +200,8 @@ const dropPiece = function(e) {
   
   actionLogData.dropSquare = dropSquare.id;
   View.unclickPiece(curPiece, dropPiece, clickPiece);
-  curPiece.updatePiece(dropSquare);
 
+  curPiece.updatePiece(dropSquare);
   // Check for pawn promotion
   if (curPiece.type === 'Pawn' && pawnPromotionCheck(curPiece))
     return;
@@ -222,6 +248,54 @@ const addPiece = function(newPc) {
 };
 
 
+// Moves king and rook according to which direction the player castles in.
+const castle = function(kingPc, rookPc) {
+  const [curKingLet, curKingNum] = kingPc.square.id.split('');
+  const curKingLetCopy = curKingLet.charCodeAt(0);
+  const curKingNumCopy = +curKingNum;
+
+  const [curRookLet, curRookNum] = rookPc.square.id.split('');
+  const curRookLetCopy = curRookLet.charCodeAt(0);
+  const curRookNumCopy = +curRookNum;
+
+  let newKingSquare;
+  let newRookSquare;
+
+  if (rookPc.id === 'white-rook-2' || rookPc.id === 'black-rook-2') {
+    const rightKingSq = `${String.fromCharCode(curKingLetCopy + 2)}${curKingNumCopy}`;
+    const rightRookSq = `${String.fromCharCode(curRookLetCopy - 2)}${curRookNumCopy}`;
+
+    newKingSquare = document.getElementById(rightKingSq);
+    newRookSquare = document.getElementById(rightRookSq);
+
+    kingPc.move(newKingSquare);
+    rookPc.move(newRookSquare);
+  } 
+  
+  else if (rookPc.id === 'white-rook-1' || rookPc.id === 'black-rook-1') {
+    const leftKingSq = `${String.fromCharCode(curKingLetCopy - 2)}${curKingNumCopy}`;
+    const leftRookSq = `${String.fromCharCode(curRookLetCopy + 3)}${curRookNumCopy}`;
+
+    newKingSquare = document.getElementById(leftKingSq);
+    newRookSquare = document.getElementById(leftRookSq);
+
+    kingPc.move(newKingSquare);
+    rookPc.move(newRookSquare);
+  }
+
+  View.unclickPiece(kingPc, dropPiece, clickPiece);
+  kingPc.square = newKingSquare;
+  kingPc.moveCount++;
+  rookPc.square = newRookSquare;
+  rookPc.moveCount++;
+  
+  // Action Log Update!
+  actionLogData.castle = true;
+  
+  updateState(state.white.allPieces, state.black.allPieces);
+};
+
+
 // Checks if a pawn moved to the end of the board.  If so, adds event to
 // click the new piece you want to promote it to.
 const pawnPromotionCheck = function(pawn) {
@@ -240,8 +314,14 @@ const pawnPromotionCheck = function(pawn) {
     player === 'Black' &&
     dropSquareNum === 1
   ) {
-    View.addHandlerBlackPromote(clickPiece, getPromotedPiece);
-    return true;
+    if (state.gameType === '2-PLAYER') {
+      View.addHandlerBlackPromote(clickPiece, getPromotedPiece);
+      return true;
+    }
+    else if (state.gameType === 'VS-AI') {
+      AIPromotePiece();
+      return true;
+    }
   }
 
   else return false;
@@ -262,20 +342,21 @@ const getPromotedPiece = function(e) {
   actionLogData.promotePiece = piece.id; 
   View.unclickPromote(getPromotedPiece, clickPiece, player);  
 
-  promotePiece(state.clicked, state.clicked.square, state.promotePiece, playerPieces);
+  promotePiece(state.clicked, state.promotePiece, playerPieces);
   updateState(state.white.allPieces, state.black.allPieces);
 };
 
 
 // Removes the pawn from all pieces arrays.  Creates the new piece and
 // adds it to all pieces arrays.
-const promotePiece = function(pawnPc, dropSq, promotePc, playerPcs) {
+const promotePiece = function(pawnPc, promotePc, playerPcs) {
   let promotedCount = 1;
   playerPcs.forEach(piece => {
     if (piece.type === promotePc) promotedCount++;
   });
   const player = pawnPc.player;
 
+  const dropSq = pawnPc.square;
   dropSq.removeChild(pawnPc.piece);
   removePiece(playerPcs, pawnPc);
 
@@ -296,7 +377,7 @@ const promotePiece = function(pawnPc, dropSq, promotePc, playerPcs) {
       : null;
   }
   
-  newPiece.move(dropSq);
+  newPiece.createPiece(newPiece.id);
   addPiece(newPiece);
 };
 
@@ -329,23 +410,33 @@ const updateOccupiedSquares = function(whitePcs, blackPcs) {
 const updateControlSquares = function(whitePcs, blackPcs) {
   const whiteControl = [];
   const blackControl = [];
+  const whiteKing = whitePcs.find(piece => piece.type === 'King');
+  const blackKing = blackPcs.find(piece => piece.type === 'King');
+  const whiteOccupied = state.white.occupiedSquares;
+  const blackOccupied = state.black.occupiedSquares;
 
   whitePcs.forEach(piece => {
-    piece.calcMoves(state);
+    piece.control = piece.calcControl(state);
     whiteControl.push(...piece.control);
-    if (piece.threatening) console.log(piece); // 
+
+    if (piece.type === 'King') return;
+    piece.moves = piece.calcMoves(state);
   });
 
   blackPcs.forEach(piece => {
-    piece.calcMoves(state);
+    piece.control = piece.calcControl(state);
     blackControl.push(...piece.control);
-    if (piece.threatening) console.log(piece); // 
+
+    if (piece.type === 'King') return;
+    piece.moves = piece.calcMoves(state);
   });
+
+  whiteKing.moves = whiteKing.calcMoves(blackControl, whiteOccupied);
+  blackKing.moves = blackKing.calcMoves(whiteControl, blackOccupied);
 
   state.white.controlSquares = whiteControl;
   state.black.controlSquares = blackControl;
 
-  // Prevents a piece from putting its own king in check!
   calcBlockingPcs(whitePcs, blackPcs);
 };
 
@@ -360,7 +451,7 @@ const calcBlockingPcs = function(whitePcs, blackPcs) {
     whiteThreats.forEach(threat => {
       const threatSq = threat.square;
       const threatPath = blackKing.calcThreatPath(threat.square);
-      blackPcs.forEach(piece => threatPath.includes(piece.square.id) ? piece.calcProtectMoves([], threatSq, threatPath) : piece);
+      blackPcs.forEach(piece => threatPath.includes(piece.square.id) ? piece.calcProtectMoves(threatSq, threatPath) : piece);
     });
   }
 
@@ -368,7 +459,7 @@ const calcBlockingPcs = function(whitePcs, blackPcs) {
     blackThreats.forEach(threat => {
       const threatSq = threat.square;
       const threatPath = whiteKing.calcThreatPath(threat.square);
-      whitePcs.forEach(piece => threatPath.includes(piece.square.id) ? piece.calcProtectMoves([], threatSq, threatPath) : piece);
+      whitePcs.forEach(piece => threatPath.includes(piece.square.id) ? piece.calcProtectMoves(threatSq, threatPath) : piece);
     })
   }
 };
@@ -381,29 +472,25 @@ const updateKings = function(whitePcs, blackPcs) {
   const whiteKing = whitePcs.find(piece => piece.type === 'King');
   const blackKing = blackPcs.find(piece => piece.type === 'King');
 
-  const whiteOccupied = state.white.occupiedSquares;
-  const blackOccupied = state.black.occupiedSquares;
-  const whiteControl = state.white.controlSquares;
-  const blackControl = state.black.controlSquares;
-  
-  // Updates both kings moves
-  whiteKing.preventSelfCheck(blackControl, whiteOccupied);
-  blackKing.preventSelfCheck(whiteControl, blackOccupied);
-
   // Checks if opponent king was put in check by current players move
-  blackKing.checkForCheck(state);
-  whiteKing.checkForCheck(state);
+  if (blackKing.checkForCheck(state))
+    blackKing.inCheck = true;
+  else blackKing.inCheck = false;
+
+  if (whiteKing.checkForCheck(state))
+    whiteKing.inCheck = true;
+  else whiteKing.inCheck = false;
 
   // If opponent king is in check, updates opponents moves to only have moves
   // that get its king out of check!
-  if (whiteKing.inCheck || blackKing.inCheck) {
+  if (blackKing.inCheck || whiteKing.inCheck) {
     actionLogData.check = true;
     const opponentKing = player === 'White' ? blackKing : whiteKing;
     const opponentPieces = player === 'White' ? state.black.allPieces : state.white.allPieces;
-    const checkPcs = opponentKing.checkPieces;
+    const threat = opponentKing.checkPieces;
 
-    if (checkPcs.length > 1) opponentKing.doubleCheck(opponentPieces, checkPcs);
-    else opponentKing.protectMe(opponentPieces, checkPcs[0]);
+    if (threat.length > 1) opponentKing.doubleCheck(opponentPieces, threat);
+    else opponentKing.protectMe(opponentPieces, threat[0]);
   }
 
   // If king is not in check and has not moved, checks for ability to castle. 
@@ -422,68 +509,17 @@ const updateKings = function(whitePcs, blackPcs) {
 };
 
 
-// Moves king and rook according to which direction the player castles in.
-const castle = function(kingPc, rookPc) {
-  const [curKingLet, curKingNum] = kingPc.square.id.split('');
-  const curKingLetCopy = curKingLet.charCodeAt(0);
-  const curKingNumCopy = +curKingNum;
-
-  const [curRookLet, curRookNum] = rookPc.square.id.split('');
-  const curRookLetCopy = curRookLet.charCodeAt(0);
-  const curRookNumCopy = +curRookNum;
-
-  let newKingSquare;
-  let newRookSquare;
-
-  if (
-    rookPc.id === 'white-rook-2' ||
-    rookPc.id === 'black-rook-2'
-  ) {
-    const rightKingSq = `${String.fromCharCode(curKingLetCopy + 2)}${curKingNumCopy}`;
-    const rightRookSq = `${String.fromCharCode(curRookLetCopy - 2)}${curRookNumCopy}`;
-
-    newKingSquare = document.getElementById(rightKingSq);
-    newRookSquare = document.getElementById(rightRookSq);
-
-    kingPc.move(newKingSquare);
-    rookPc.move(newRookSquare);
-  } 
-  
-  else if (
-    rookPc.id === 'white-rook-1' ||
-    rookPc.id === 'black-rook-1' 
-  ) {
-    const leftKingSq = `${String.fromCharCode(curKingLetCopy - 2)}${curKingNumCopy}`;
-    const leftRookSq = `${String.fromCharCode(curRookLetCopy + 3)}${curRookNumCopy}`;
-
-    newKingSquare = document.getElementById(leftKingSq);
-    newRookSquare = document.getElementById(leftRookSq);
-
-    kingPc.move(newKingSquare);
-    rookPc.move(newRookSquare);
-  }
-
-  View.unclickPiece(kingPc, dropPiece, clickPiece);
-  kingPc.square = newKingSquare;
-  kingPc.moveCount++;
-  rookPc.square = newRookSquare;
-  rookPc.moveCount++;
-  
-  // !Action Log Update!
-  actionLogData.castle = true;
-  
-  updateState(state.white.allPieces, state.black.allPieces);
-};
-
-
 const checkmateCheck = function(whiteKing, blackKing) {
   if (whiteKing.checkmate === true || blackKing.checkmate === true) {
     actionLogData.checkmate = true;
     View.updateActionLog(state, actionLogData);
-    View.stopGame(clickPiece);
+    View.stopEvent(clickPiece);
     alert('Checkmate!');
+    return true;
   }
-}
+
+  return false;
+};
 
 
 // Checks for a stalemate
@@ -501,10 +537,13 @@ const stalemateCheck = function(whitePcs, blackPcs) {
   if (!curKing.inCheck && curPlayerMoves.length === 0) {
     actionLogData.stalemate = true;
     View.updateActionLog(state, actionLogData);
-    View.stopGame(clickPiece);
+    View.stopEvent(clickPiece);
     alert('Stalemate!');
+    return true;
   }
-}
+
+  return false;
+};
 
 
 // Updates the data in the state object.  Updates the action log and checks
@@ -518,13 +557,19 @@ const updateState = function(whitePcs, blackPcs) {
   state.turnNum++;
   state.activePlayer = state.turnNum % 2 !== 0 ? 'White' : 'Black';
 
-  checkmateCheck(state.white.king, state.black.king);
-  stalemateCheck(whitePcs, blackPcs);
+  if (checkmateCheck(state.white.king, state.black.king)) return;
+  if (stalemateCheck(whitePcs, blackPcs)) return;
   actionLogData = {};
+
+  // RUNS THE AI TURN!!!
+  if (state.gameType === 'VS-AI' && state.activePlayer === 'Black') {
+    View.stopEvent(clickPiece);
+    runAITurn();
+  }
 };
 
 const quitGame = function() {
-  View.stopGame(clickPiece);
+  View.stopEvent(clickPiece);
   View.resetView();
 
   state.turnNum = 0;
@@ -537,11 +582,69 @@ const quitGame = function() {
   state.black.occupiedSquares = [];
   state.black.controlSquares = [];
 
-  View.addHandlerMenuBtns(initGame);
+  View.addHandlerMenuBtns(init2Player, initVsAI);
   View.addHandlerPieceClick(clickPiece);
 };
 
 
+
+
+
+// AI MOVE PIECE 
+const runAITurn = async function() {
+  state.AI.updateData(state);
+  state.AI.getMove();
+  state.clicked = state.AI.movePiece;
+  await wait(1);
+  
+  AIDropPiece(state.AI.dropSquare);
+  View.addHandlerPieceClick(clickPiece);
+};
+
+const AIDropPiece = function(dropSq) {
+  const curPiece = state.clicked;
+  actionLogData.initialSquare = curPiece.square.id;
+
+  const AIOccupied = state.black.occupiedSquares;
+  const userOccupied = state.white.occupiedSquares;
+
+  // Check if square is occupied by a villian piece
+  if (userOccupied.includes(dropSq.id)) {
+    const userPieces = state.white.allPieces;
+    const capturedPiece = getCapturedPiece(dropSq, userPieces); 
+    curPiece.capture(dropSq, capturedPiece);
+    removePiece(userPieces, capturedPiece);
+  }
+
+  // Only for castling
+  else if (AIOccupied.includes(dropSq.id)) {
+    const AIPieces = state.black.allPieces;
+    const rookPiece = AIPieces.find(piece => piece.square.id === dropSq.id);
+    castle(curPiece, rookPiece);
+    return;
+  }
+
+  // Move to empty square
+  else curPiece.move(dropSq);
+  
+  actionLogData.dropSquare = dropSq.id;
+  curPiece.updatePiece(dropSq);
+  // Check for pawn promotion
+  if (curPiece.type === 'Pawn' && pawnPromotionCheck(curPiece))
+    return;
+  updateState(state.white.allPieces, state.black.allPieces);
+}
+
+const AIPromotePiece = function() {
+  state.promotePiece = 'Queen';
+  actionLogData.promotePiece = 'Queen'; 
+  const AIPieces = state.black.allPieces;
+
+  promotePiece(state.clicked, state.promotePiece, AIPieces);
+  updateState(state.white.allPieces, state.black.allPieces);
+};
+
+const wait = seconds => new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
 
 
@@ -551,18 +654,25 @@ const quitGame = function() {
 const clickPiece = function(e) {
   const clickedPiece = e.target.closest('.piece')
   if (!clickedPiece) return;
-  
   getPiece(clickedPiece);
-  if (state.clicked.player !== state.activePlayer) return;
-
+  
+  // IF PLAYING 2 PLAYER
+  if (state.gameType === '2-PLAYER' && state.activePlayer !== state.clicked.player) 
+    return;
+  // IF PLAYING VS AI
+  else if (state.gameType === 'VS-AI' && state.clicked.player !== 'White')     
+    return;
+  
   View.renderSquares(state.clicked);
   View.addHandlerPieceDrop(clickPiece, dropPiece);
 };
 
 // Adds handlers for clicking the menu button and the pieces.
-View.addHandlerMenuBtns(initGame);
+View.addHandlerMenuBtns(init2Player, initVsAI); 
 View.addHandlerPieceClick(clickPiece);
 View.addHandlerQuitGame(quitGame);
+
+
 
 
 

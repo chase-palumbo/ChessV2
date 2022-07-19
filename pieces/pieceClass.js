@@ -1,10 +1,22 @@
 const whiteCaptured = document.querySelector('.taken-pieces');
 const blackCaptured = document.querySelector('.lost-pieces');
 
+const boardSquares = [
+  'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8', 
+  'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7', 
+  'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6', 
+  'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5', 
+  'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4', 
+  'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3', 
+  'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2', 
+  'a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'
+];
+
 export default class Piece {
   moveCount = 0;
 
   move(dropSq) {
+    console.log(this);
     dropSq.appendChild(this.piece);
   }
 
@@ -73,10 +85,7 @@ export default class Piece {
 
   validSquareCheck(moves) {
     const validMoves = moves.filter(move => {
-      const square = document.getElementById(move);
-      if (!square) return
-
-      else return move;
+      if (boardSquares.includes(move)) return move;
     });
 
     return validMoves;
@@ -97,12 +106,13 @@ export default class Piece {
     const threatType = threat.type;
     const threatSquare = threat.square;
 
-    const protectMoves = [];
+    const allProtectMoves = [];
 
     // If threat is a pawn, knight, or king
     if (singleMovePcs.includes(threatType)) {
       pieces.forEach(piece => {
-        piece.calcProtectMoves(protectMoves, threatSquare);
+        const protectMoves = piece.calcProtectMoves(threatSquare);
+        allProtectMoves.push(...protectMoves);
       });
     }
 
@@ -110,25 +120,26 @@ export default class Piece {
     else if (multiMovePcs.includes(threatType)) {
       const threatPath = this.calcThreatPath(threatSquare);
       pieces.forEach(piece => {
-        piece.calcProtectMoves(protectMoves, threatSquare, threatPath);
+        const protectMoves = piece.calcProtectMoves(threatSquare, threatPath);
+        allProtectMoves.push(...protectMoves);
       });
     }
 
-    if (protectMoves.length === 0) 
+    if (allProtectMoves.length === 0) 
       this.checkmate = true;
-    
+    else if (allProtectMoves.length > 0)
+      this.checkmate = false;
   }
 
   // Takes away every pieces moves but the king's.  Removes kings moves
   // that are in a threat path.  Checks if the king can move.  If King
   // cant move, CHECKMATE!
   doubleCheck(pieces, threat) {
-    const singleMovePcs = ['Pawn', 'Knight', 'King'];
     const multiMovePcs = ['Queen', 'Rook', 'Bishop'];
 
     pieces.forEach(piece => {
-      if (this.type !== 'King')
-      this.moves = [];
+      if (piece.type !== 'King')
+      piece.moves = [];
     });
 
     threat.forEach(thr => {
@@ -139,29 +150,30 @@ export default class Piece {
 
     if (this.moves.length === 0) 
       this.checkmate = true;
-    
+    else if (this.moves.length > 0)
+      this.checkmate = false;
   }
 
   // Run on each piece when your king is in check!  Updates valid moves!
-  calcProtectMoves(protectMvs, threatSq, threatPath = '') {
-    const moves = this.moves;
-    
-    if (!threatPath) {
+  calcProtectMoves(threatSq, threatPath = '') {
+    const protectMoves = [];
+
+    if (this.type === 'King') 
+      protectMoves.push(...this.moves);
+
+    else if (!threatPath) {
       // Can you capture the threat?
-      if (this.type !== 'King') {
-        this.moves = moves.filter(move => move === threatSq.id);
-      }
-      protectMvs.push(...this.moves);
+      this.moves = this.moves.filter(move => move === threatSq.id);
+      protectMoves.push(...this.moves);
     }
-    
+
     else if (threatPath) {
       // Can you block or capture the threat?
-      if (this.type !== 'King') {
-        this.moves = moves.filter(move => threatPath.includes(move));
-      }
-      protectMvs.push(...this.moves);
+      this.moves = this.moves.filter(move => threatPath.includes(move));
+      protectMoves.push(...this.moves);
     }
     
+    return protectMoves;
   }
 
   // Only used by king pieces.  Gets the squares seperating the calling 

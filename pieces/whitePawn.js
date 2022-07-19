@@ -2,13 +2,14 @@ import Piece from "./pieceClass.js";
 
 export class WhitePawn extends Piece {
   type = 'Pawn';
+  rank = 1;
   player = 'White';
   img = './pieceImgs/White_Pawn.svg.png';
 
   constructor(squareID, pieceID) {
     super();
     this.square = document.getElementById(squareID);
-    this.createPiece(pieceID);
+    this.id = pieceID;
   }
 
   createPiece(pieceID) {
@@ -16,15 +17,28 @@ export class WhitePawn extends Piece {
     this.square.insertAdjacentHTML('afterbegin', this.pieceHTML);
 
     this.piece = document.getElementById(pieceID);
-    this.id = pieceID;
   }
 
+  calcControl(state) {
+    const [curLet, curNum] = this.square.id.split('');
+    const controlSquares = [];
+
+    const curLetCopy = curLet.charCodeAt(0);
+    const curNumCopy = +curNum;
+
+    const upLeft = `${String.fromCharCode(curLetCopy - 1)}${curNumCopy + 1}`;
+    const upRight = `${String.fromCharCode(curLetCopy + 1)}${curNumCopy + 1}`;
+    controlSquares.push(upLeft, upRight);
+
+    const control = this.validSquareCheck(controlSquares);
+    return control
+  }
+  
   calcMoves(state) {
     const [curLet, curNum] = this.square.id.split('');
     const allOccupied = state.allOccupiedSquares;
     const blackOccupied = state.black.occupiedSquares;
     const validMoves = [];
-    const controlSquares = [];
 
     const curLetCopy = curLet.charCodeAt(0);
     const curNumCopy = +curNum;
@@ -39,18 +53,11 @@ export class WhitePawn extends Piece {
     ) validMoves.push(up, up2);
     else if (!allOccupied.includes(up)) validMoves.push(up);
 
-    const upLeft = `${String.fromCharCode(curLetCopy - 1)}${curNumCopy + 1}`;
-    const upRight = `${String.fromCharCode(curLetCopy + 1)}${curNumCopy + 1}`;
-    controlSquares.push(upLeft, upRight);
+    this.control.forEach(move => {
+      if (blackOccupied.includes(move)) validMoves.push(move);
+    });
 
-    if (blackOccupied.includes(upLeft)) validMoves.push(upLeft);
-    if (blackOccupied.includes(upRight)) validMoves.push(upRight);
-
-    this.control = this.validSquareCheck(controlSquares);
-    this.moves = this.validSquareCheck(validMoves);
-  }
-  
-  promote(queenPiece) {
-
+    const moves = this.validSquareCheck(validMoves);
+    return moves;
   }
 };

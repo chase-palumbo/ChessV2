@@ -19,12 +19,13 @@ class View {
     const startGame = function(e) {
       const btn = e.target.closest('.btn');
       if (!btn) return;
+
       const twoPlayer = document.querySelector('.two-player');
       const vsAI = document.querySelector('.vs-AI');
       if (btn === twoPlayer) handler1();
       if (btn === vsAI) handler2();
-      menu.removeEventListener('click', startGame);
 
+      menu.removeEventListener('click', startGame);
       const quitButtonMarkup = `<button class="quit-game btn">Quit Game</button>`;
       menu.insertAdjacentHTML('beforeend', quitButtonMarkup);
     };
@@ -194,14 +195,14 @@ class View {
     
   }
 
-  stopGame(handler) {
+  stopEvent(handler) {
     board.removeEventListener('click', handler);
   }
 
   resetView() {
     const gameElements = [board, actionLog, whiteCaptured, blackCaptured];
     const allSquares = document.querySelectorAll('.square');
-    allSquares.forEach(square => {    
+    allSquares.forEach(square => {
       square.classList.remove('clicked-square');
       square.classList.remove('drop-square');
       const piece = square.querySelector('img');
