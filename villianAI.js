@@ -11,9 +11,6 @@ import { BlackQueen } from "./pieces/blackQueen.js";
 import { WhiteKing } from "./pieces/whiteKing.js";
 import { BlackKing } from "./pieces/blackKing.js";
 
-// NEED TO FIGURE OUT HOW TO SIMULATE A MOVE BY UPDATING A PIECES
-// SQUARE, THEN UPDATING ALL THE STATE DATA IN A COPIED STATE.
-
 const boardSquares = [
   'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8', 
   'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7', 
@@ -193,11 +190,6 @@ export class VillianAI {
     this.movePiece = this.calcRandomPiece();
     this.dropSquare = this.calcRandomDropSquare();
   }
-  
-
-
-  //////////////////////////////////////////////////////
-  // DISASTER AHEAD ... //
 
   calcMoves() {
     this.simMoveable.forEach(piece => this.simulateMoves(piece));
@@ -208,19 +200,19 @@ export class VillianAI {
     console.log(this.prepCaptures);
 
     if (this.checkmateMoves.length > 0) {
-      console.log('AI CHECKMATE MOVE!');
+      // console.log('AI CHECKMATE MOVE!');
       const mateMove = this.randomElement(this.checkmateMoves);
       return mateMove;
     }
 
     else if (this.checkMoves.length > 0) {
-      console.log('AI Check move!');
+      // console.log('AI Check move!');
       const checkMove = this.randomElement(this.checkMoves);
       return checkMove;
     }
 
     else if (this.bestCaptures.length > 0) {
-      console.log('AI Capture move!');
+      // console.log('AI Capture move!');
       // FILTER BESTCAPTURES TO ONE MOVE
       if (this.bestCaptures.length > 1) {
         const bestCapture = this.filterCaptures(this.bestCaptures);
@@ -233,7 +225,7 @@ export class VillianAI {
     }
 
     else if (this.prepCaptures.length > 0) {
-      console.log('AI Preparing to capture!');
+      // console.log('AI Preparing to capture!');
       if (this.prepCaptures.length > 1) {
         const prepMove = this.filterCaptures(this.prepCaptures);
         return prepMove;
